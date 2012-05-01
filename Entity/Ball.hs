@@ -40,22 +40,22 @@ reflectOther other ball
   | yb > yt   = if xr < xl then topRight    other ball else topLeft    other ball
   | otherwise = if xr < xl then bottomRight other ball else bottomLeft other ball
   where
-    yt = (top other - bottom ball) 
-    yb = (top ball - bottom other) 
-    xl = (right ball - left other)
-    xr = (right other - left ball)
+    yt = top other - bottom ball
+    yb = top ball - bottom other 
+    xl = right ball - left other
+    xr = right other - left ball
     topLeft other ball     = if yt < xl 
-                             then reflectY ball (top other + (height ball) / 2.0)
-                             else reflectX ball (left other + (width ball) / 2.0)
+                             then reflectY ball (top other  + height ball / 2.0)
+                             else reflectX ball (left other + width ball  / 2.0)
     topRight other ball    = if yt < xr
-                             then reflectY ball (top other + (height ball) / 2.0)
-                             else reflectX ball (right other + (width ball) / 2.0)
+                             then reflectY ball (top other   + height ball / 2.0)
+                             else reflectX ball (right other + width ball  / 2.0)
     bottomLeft other ball  = if yb < xl 
-                             then reflectY ball (bottom other - (height ball) / 2.0)
-                             else reflectX ball (left other + (width ball) / 2.0)
+                             then reflectY ball (bottom other - height ball / 2.0)
+                             else reflectX ball (left other + width ball / 2.0)
     bottomRight other ball = if yb < xr
-                             then reflectY ball (bottom other - (height ball) / 2.0)
-                             else reflectX ball (right other + (width ball) / 2.0)
+                             then reflectY ball (bottom other - height ball / 2.0)
+                             else reflectX ball (right other + width ball / 2.0)
 
 
 
@@ -73,12 +73,12 @@ bounceY ball@(Ball _ y _ _ _)
   | otherwise = ball
                 
 bounceOther :: Entity a => a -> Ball -> Ball
-bounceOther other ball = if (Entity.aabb other ball) 
+bounceOther other ball = if Entity.aabb other ball
                          then reflectOther other ball
                          else ball
 
 bounce :: Entity a => Ball -> a -> Ball
-bounce ball other = (bounceY  (bounceX  (bounceOther other ball)))
+bounce ball other = bounceY  . bounceX  $ bounceOther other ball
                             
                 
   

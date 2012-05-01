@@ -20,6 +20,6 @@ class Entity a where
   
 aabb e1 e2 = not (xCheck e1 e2) && not (yCheck e1 e2)
   where
-    xCheck e1 e2 = (right e1) < (left e2) || (left e1)  > (right e2)
-    yCheck e1 e2 = (bottom e1) > (top e2) || (top e1)   < (bottom e2)
+    xCheck e1 e2 = right e1  < left e2 || left e1  > right e2
+    yCheck e1 e2 = bottom e1 > top e2  || top e1   < bottom e2
     
