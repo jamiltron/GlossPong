@@ -1,0 +1,12 @@
+Name: GlossPong
+Version: 0.0.1
+Description: Proof-of-concept pong in gloss
+License: BSD3
+License-file: LICENSE
+Author: Justin Hamilton
+Maintainer: justinanthonyhamilton@gmail.com
+Build-Type: Simple
+
+Executable GlossPong
+           Main-is: Main.hs
+           Build-Depends: gloss, base >= 4
