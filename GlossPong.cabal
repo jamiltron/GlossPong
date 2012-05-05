@@ -1,12 +1,16 @@
-Name: GlossPong
-Version: 0.0.1
-Description: Proof-of-concept pong in gloss
-License: BSD3
-License-file: LICENSE
-Author: Justin Hamilton
-Maintainer: justinanthonyhamilton@gmail.com
-Build-Type: Simple
+name: GlossPong
+version: 0.0.2
+description: Proof-of-concept pong in gloss
+license: BSD3
+license-file: LICENSE
+author: Justin Hamilton
+maintainer: justinanthonyhamilton@gmail.com
+build-type: Simple
+category: Game
+homepage: https://github.com/jamiltron/GlossPong
 
 Executable GlossPong
+           ghc-options: -O2 -threaded
+           other-modules: Entity Entity.Paddle Entity.Ball World
            Main-is: Main.hs
            Build-Depends: gloss, base >= 4

@@ -2,7 +2,6 @@ module Entity.Ball where
 
 import Graphics.Gloss
 import Data.Tuple (uncurry)
-import Debug.Trace
 import Entity
       
 --          Ball x     y     r     xv    yv
@@ -26,59 +25,86 @@ instance Entity Ball where
               $ uncurry Translate  (center ball)
               $ ThickCircle 1.0 (width ball)
 
+-- move the ball, checking for collision against another entity
+ballMove :: (Entity a) => Ball -> a -> Ball
 ballMove ball other = let (Ball x y r xv yv) = (bounce ball other)
                       in Ball (x + xv) (y + yv) r xv yv
+                         
+-- do all of our neccessary bounce checks and reflection
+bounce :: Entity a => Ball -> a -> Ball
+bounce ball other = bounceY  . bounceX  $ bounceOther other ball
 
-reflectX :: Ball -> Float -> Ball
-reflectX (Ball x y r xv yv) x' = Ball x' y r (-1.0 * xv) yv 
-                   
-reflectY :: Ball -> Float -> Ball
-reflectY (Ball x y r xv yv) y' = Ball x y' r xv (-1.0 * yv)
-
-reflectOther :: Entity a => a -> Ball -> Ball
-reflectOther other ball 
-  | yb > yt   = if xr < xl then topRight    other ball else topLeft    other ball
-  | otherwise = if xr < xl then bottomRight other ball else bottomLeft other ball
-  where
-    yt = top other - bottom ball
-    yb = top ball - bottom other 
-    xl = right ball - left other
-    xr = right other - left ball
-    topLeft other ball     = if yt < xl 
-                             then reflectY ball (top other  + height ball / 2.0)
-                             else reflectX ball (left other + width ball  / 2.0)
-    topRight other ball    = if yt < xr
-                             then reflectY ball (top other   + height ball / 2.0)
-                             else reflectX ball (right other + width ball  / 2.0)
-    bottomLeft other ball  = if yb < xl 
-                             then reflectY ball (bottom other - height ball / 2.0)
-                             else reflectX ball (left other + width ball / 2.0)
-    bottomRight other ball = if yb < xr
-                             then reflectY ball (bottom other - height ball / 2.0)
-                             else reflectX ball (right other + width ball / 2.0)
-
-
-
-
+-- check if we need to bounce off of a left or right wall
 bounceX :: Ball -> Ball
 bounceX ball@(Ball x _ _ _ _)
   | x <= (-390.0) = reflectX ball (-390.0)
   | x >= 390.0    = reflectX ball 390.0
   | otherwise     = ball
-                                                  
+                    
+-- check if we need to bounce off of the top or bottom
 bounceY :: Ball -> Ball
 bounceY ball@(Ball _ y _ _ _)
   | y <= (-290.0) = reflectY ball (-290.0)
-  | y >= 290.0 = reflectY ball 290.0
-  | otherwise = ball
-                
+  | y >= 290.0    = reflectY ball 290.0
+  | otherwise     = ball
+
+-- check if we are colliding with another entity                
 bounceOther :: Entity a => a -> Ball -> Ball
 bounceOther other ball = if Entity.aabb other ball
                          then reflectOther other ball
                          else ball
 
-bounce :: Entity a => Ball -> a -> Ball
-bounce ball other = bounceY  . bounceX  $ bounceOther other ball
+-- bounce the ball horizontally
+reflectX :: Ball -> Float -> Ball
+reflectX (Ball x y r xv yv) x' = Ball x' y r (-1.0 * xv) yv 
+
+-- bounce the ball vertically
+reflectY :: Ball -> Float -> Ball
+reflectY (Ball x y r xv yv) y' = Ball x y' r xv (-1.0 * yv)
+
+-- if colliding with another, check where it needs to be reflected
+-- this calculates which side is in collision, and then figures
+-- out which edge(s) the ball needs to be reflected off of
+reflectOther :: Entity a => a -> Ball -> Ball
+reflectOther other ball 
+  -- if the colliding edges are equal, reflect both
+  | min yt yb == min xl xr = reflectBoth
+                             
+  -- if the top is the colliding edge, figure out if we need to reflect l or r
+  | yt < yb   = if xr < xl then topRight    else topLeft
+                                                 
+  -- otherwise, we are colliding on the bottom
+  | otherwise = if xr < xl then bottomRight else bottomLeft
+  where
+    yt = top other - bottom ball
+    yb = top ball - bottom other 
+    xl = right ball - left other
+    xr = right other - left ball
+    hb = height ball / 2.0
+    wb = height ball / 2.0
+    topLeft     = if yt < xl 
+                  then reflectY ball (top other  + hb)
+                  else reflectX ball (left other - wb)
+                       
+    topRight    = if yt < xr
+                  then reflectY ball (top other   + hb)
+                  else reflectX ball (right other + wb)
+                       
+    bottomLeft  = if yb < xl 
+                  then reflectY ball (bottom other - hb)
+                  else reflectX ball (left other - wb)
+                       
+    bottomRight = if yb < xr
+                  then reflectY ball (bottom other - hb)
+                  else reflectX ball (right other + wb)
+                       
+    reflectBoth = let yPos = if yt < yb then top other  + hb else bottom other - hb
+                      xPos = if xr < xl then left other - wb else right other  + wb
+                  in reflectY (reflectX ball xPos) yPos
+
+
+
+
                             
                 
   
