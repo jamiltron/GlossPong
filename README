@@ -1,4 +1,4 @@
-Use the "A" and "D" keys to move.
+Use the "A"/"D" or Left/Right keys to move.
 
 A pong-esque game written using Gloss. This is more a proof of concept than
 a working game. I wanted to see how easy it was to get stuff moving around
