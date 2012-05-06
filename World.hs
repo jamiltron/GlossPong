@@ -12,7 +12,7 @@ data World = World Paddle Ball Score
 -- starting world
 genesis :: World
 genesis =  World (Paddle 0.0 (-240.0) 128 32 0.0)
-                 (Ball 0.0 0.0 8.0 3.0 3.0)
+                 (Ball 0.0 0.0 8.0 308.0 308.0)
                  0
            
 -- display text in the top-left corner
@@ -31,8 +31,8 @@ drawEntities (World p b s) = Pictures [ render p
 -- move the paddle based on its velocity, check if the ball bounces, and check
 -- if score needs to be reset or incremented
 moveEntities :: Float -> World -> World
-moveEntities time (World p b s) = let p' = move p
-                                      b' = ballMove b p
+moveEntities time (World p b s) = let p' = move p time
+                                      b' = ballMove b p time
                                       s'  = checkScore b b' s
                                   in World p' b' s'
 

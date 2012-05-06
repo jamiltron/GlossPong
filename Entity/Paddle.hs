@@ -25,10 +25,10 @@ instance Entity Paddle where
   xvel   (Paddle _ _ _ _ xv) = xv
   yvel   _                   = 0
   
-  move (Paddle x y w h v)
+  move (Paddle x y w h v) time
     | x <= (-336) && v <= 0 = Paddle x y w h v
     | x >=   336  && v >= 0 = Paddle x y w h v
-    | otherwise = Paddle (x + v) y w h v 
+    | otherwise = Paddle (x + v * time) y w h v 
 
   render (Paddle x y w h _) = paddleColor
                 $ Translate x y

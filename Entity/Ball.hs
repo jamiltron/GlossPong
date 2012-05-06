@@ -18,17 +18,17 @@ instance Entity Ball where
   xvel   (Ball _ _ _ v _) = v
   yvel   (Ball _ _ _ _ v) = v
   
-  move ball = let (Ball x y r xv yv) = ball
-              in Ball (x + xv) (y + yv) r xv yv
+  move ball time = let (Ball x y r xv yv) = ball
+                   in Ball (x + xv * time) (y + yv * time) r xv yv
   
   render ball = Color (makeColor 0.7 0.2 0.3 1.0)
               $ uncurry Translate  (center ball)
               $ ThickCircle 1.0 (width ball)
 
 -- move the ball, checking for collision against another entity
-ballMove :: (Entity a) => Ball -> a -> Ball
-ballMove ball other = let (Ball x y r xv yv) = (bounce ball other)
-                      in Ball (x + xv) (y + yv) r xv yv
+ballMove :: (Entity a) => Ball -> a -> Float -> Ball
+ballMove ball other time = let (Ball x y r xv yv) = (bounce ball other)
+                           in Ball (x + xv * time) (y + yv * time) r xv yv
                          
 -- do all of our neccessary bounce checks and reflection
 bounce :: Entity a => Ball -> a -> Ball

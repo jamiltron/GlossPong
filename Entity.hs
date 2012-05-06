@@ -13,7 +13,7 @@ class Entity a where
   height      :: a -> Float
   xvel        :: a -> Float
   yvel        :: a -> Float
-  move        :: a -> a
+  move        :: a -> Float -> a
   render      :: a -> Picture
   
 -- basic bounding box collision
